@@ -17,8 +17,8 @@ def create_app():
     load_dotenv()
     app = Flask(__name__)
 
-    app.config["SECRET_KEY"] = "wontBeTheKey"
-    app.config["JWT_SECRET_KEY"] = "wontBeTheKey"
+    app.config["SECRET_KEY"] = os.getenv("SecretKey")
+    app.config["JWT_SECRET_KEY"] = os.getenv("JWTSecretKey")
 
     ## also, this will need to be manually pasted and should not enter github.
     print(os.getenv("DB_URI"))
@@ -31,8 +31,11 @@ def create_app():
     # register our blueprints
 
     from .auth import auth
+    from .bikes import bikes
 
     CORS(auth)
+    CORS(bikes)
     app.register_blueprint(auth, url_prefix="/auth/")
+    app.register_blueprint(bikes, url_prefix="/bikes/")
 
     return app

@@ -4,6 +4,8 @@ from flask_jwt_extended import create_access_token
 from . import db
 from .models import Account
 
+import bcrypt
+
 auth = Blueprint("auth", __name__)
 
 
@@ -20,9 +22,7 @@ def create_token():
     return response
 
 
-auth.route("/register", methods=["POST"])
-
-
+@auth.route("/register", methods=["POST"])
 def register():
     registerDict = request.get_json()
 
@@ -34,5 +34,21 @@ def register():
     )
     db.session.add(newAccount)
     db.session.commit()
-    response = {"registered": "yes"}
+    response = {"registered": "true"}
     return response, 200
+
+## these methods should work for the hashing, however they are not being used yet.
+
+def hash_password(password):
+    password_bytes = password.encode('utf-8')
+
+    salt = bcrypt.gensalt()
+
+    hashed_password = bcrypt.hashpw(password_bytes, salt)
+    return hashed_password
+
+def check_password(hashed_password, user_password):
+    password_bytes = user_password.encode('utf-8')
+
+    return bcrypt.checkpw(password_bytes, hashed_password)
+

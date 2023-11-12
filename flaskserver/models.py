@@ -29,8 +29,8 @@ class Account(db.Model, DictEnabled):
 class AccountBikePost(db.Model):
     __tablename__ = "accountbikeposts"
 
-    accountid = db.Column(db.Integer)
-    bikeid = db.Column(db.Integer)
+    accountid = db.Column(db.Integer, primary_key = True)
+    bikeid = db.Column(db.Integer, primary_key = True)
 
     def __init__(self, accountid, bikeid):
         self.accountid = accountid

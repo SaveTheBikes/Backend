@@ -8,6 +8,7 @@ import bcrypt
 
 auth = Blueprint("auth", __name__)
 
+##todo session token not expired endpoint
 
 @auth.route("/login", methods=["POST"])
 def create_token():
@@ -38,7 +39,6 @@ def register():
     return response, 200
 
 ## these methods should work for the hashing, however they are not being used yet.
-
 def hash_password(password):
     password_bytes = password.encode('utf-8')
 

@@ -1,6 +1,6 @@
 from flask import Blueprint, Flask, request, jsonify
 
-from .models import BikePost
+from .models import Account, AccountBikePost, BikePost
 from . import db
 
 bikes = Blueprint("bikes", __name__)
@@ -18,7 +18,24 @@ def get_all_bikes():
 def get_user_bikes():
     ## will need to work with accountnameBikes to find which ones belong to user
     ## then use bike table to return those TODO
-    return 400
+
+    userID = request.json.get("userID", None)
+    if not userID:
+        return jsonify({'message': 'UserID is missing!'}), 403
+    user = Account.query.filter_by(id=userID).first()
+    if not user:
+        return jsonify({'message': 'No user with this ID'}), 403
+    
+    user_bike_query = db.session.query(BikePost).\
+        join(AccountBikePost, AccountBikePost.postid == BikePost.id).\
+        filter(AccountBikePost.accountid == userID)
+    
+    user_bikes = user_bike_query.all()
+
+    for idx, i in enumerate(user_bikes):
+        user_bikes[idx] = i.as_dict()
+
+    return jsonify(user_bikes)
 
 @bikes.route("/seeBike", methods=["GET"])
 def see_bike():
@@ -31,14 +48,21 @@ def add_bike():
     dateStolen = request.json.get("dateStolen", None)
     title = request.json.get("title", None)
     picture = request.json.get("encodedPicture", None)
-
-    ## todo we also need to add in the functionality where users ids and bike ids are added to accountbikeposts
+    colour = request.json.get("colour", None)
+    model = request.json.get("model", None)
+    user_id = request.json.get("user_id")
+    
     ## if a location is given, add location to location table TODO
-    ## add colour, model 
 
-    newBike = BikePost(datestolen=dateStolen, title=title, picture=picture)
+    newBike = BikePost(datestolen=dateStolen, title=title, picture=picture, colour=colour, model=model)
     db.session.add(newBike)
     db.session.commit()
+
+    newAccountBikePost = AccountBikePost(accountid=user_id, postid=newBike.id)
+
+    db.session.add(newAccountBikePost)
+    db.session.commit()
+
     resp = jsonify(success=True)
     return resp
 

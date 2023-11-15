@@ -30,11 +30,11 @@ class AccountBikePost(db.Model):
     __tablename__ = "accountbikeposts"
 
     accountid = db.Column(db.Integer, primary_key = True)
-    bikeid = db.Column(db.Integer, primary_key = True)
+    postid = db.Column(db.Integer, primary_key = True)
 
-    def __init__(self, accountid, bikeid):
+    def __init__(self, accountid, postid):
         self.accountid = accountid
-        self.bikeid = bikeid
+        self.postid = postid
 
 class BikePost(db.Model, DictEnabled):
     __tablename__ = "bikepost"
@@ -44,11 +44,15 @@ class BikePost(db.Model, DictEnabled):
     title = db.Column(db.String())
     # b64 encoding
     picture = db.Column(db.UnicodeText)
+    colour = db.Column(db.String())
+    model = db.Column(db.String())
 
-    def __init__(self, datestolen, title, picture):
+    def __init__(self, datestolen, title, picture, colour, model):
         self.datestolen = datestolen
         self.title = title
         self.picture = picture
+        self.colour = colour
+        self.model = model
     
     def __repr__(self):
         return '<datestolen {}> & <title {}>'.format(self.datestolen, self.title)

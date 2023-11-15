@@ -1,6 +1,7 @@
 from flask import Blueprint, Flask, request, jsonify
+from sqlalchemy.exc import SQLAlchemyError
 
-from .models import Account, AccountBikePost, BikePost
+from .models import Account, AccountBikePost, BikePost, BikePostLocation
 from . import db
 
 bikes = Blueprint("bikes", __name__)
@@ -51,19 +52,38 @@ def add_bike():
     colour = request.json.get("colour", None)
     model = request.json.get("model", None)
     user_id = request.json.get("user_id")
-    
-    ## if a location is given, add location to location table TODO
 
-    newBike = BikePost(datestolen=dateStolen, title=title, picture=picture, colour=colour, model=model)
-    db.session.add(newBike)
-    db.session.commit()
+    locationlat = request.json.get("location_lat", None)
+    locationlon = request.json.get("location_lon", None)
+    dateseen = request.json.get("dateseen", None)
+    address = request.json.get("address", None)
 
-    newAccountBikePost = AccountBikePost(accountid=user_id, postid=newBike.id)
+    try:
+        # Create a new BikePost instance and add it to the session
+        newBike = BikePost(datestolen=dateStolen, title=title, picture=picture, colour=colour, model=model)
+        db.session.add(newBike)
+        
+        # The 'flush' method sends the above SQL command to the database, 
+        # and the 'id' for newBike is populated, but it doesn't commit yet
+        db.session.flush()
 
-    db.session.add(newAccountBikePost)
-    db.session.commit()
+        # Now that the newBike has an ID, create a new AccountBikePost instance
+        newAccountBikePost = AccountBikePost(accountid=user_id, postid=newBike.id)
+        db.session.add(newAccountBikePost)
 
-    resp = jsonify(success=True)
+        # Add to location table if we have coordinates
+        if locationlat and locationlon:
+            newLocation = BikePostLocation(locationlon=locationlon, locationlat=locationlat, postid=newBike.id, address=address, dateseen=dateseen)
+            db.session.add(newLocation)
+
+        # Commit the transaction
+        db.session.commit()
+        resp = jsonify(success=True)
+    except SQLAlchemyError as e:
+        # Roll back our changes if epic fail
+        db.session.rollback()
+        resp = jsonify(success=False, error=str(e))
+        
     return resp
 
     

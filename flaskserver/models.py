@@ -36,6 +36,24 @@ class AccountBikePost(db.Model):
         self.accountid = accountid
         self.postid = postid
 
+class BikePostLocation(db.Model):
+    __tablename__ = "bikepostlocation"
+
+    address = db.Column(db.String())
+    dateseen = db.Column(db.DateTime)
+    id = db.Column(db.Integer, primary_key = True)
+
+    locationlat = db.Column(db.Float)
+    locationlon = db.Column(db.Float)
+    postid = db.Column(db.Integer)
+
+    def __init__(self, address, dateseen, locationlat, locationlon, postid):
+        self.address = address
+        self.dateseen = dateseen
+        self.locationlat = locationlat
+        self.locationlon = locationlon
+        self.postid = postid
+
 class BikePost(db.Model, DictEnabled):
     __tablename__ = "bikepost"
 

@@ -21,7 +21,6 @@ def create_app():
     app.config["JWT_SECRET_KEY"] = os.getenv("JWTSecretKey")
 
     ## also, this will need to be manually pasted and should not enter github.
-    print(os.getenv("DB_URI"))
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DB_URI")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     CORS(app)

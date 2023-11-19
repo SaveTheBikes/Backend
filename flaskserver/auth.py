@@ -11,6 +11,7 @@ from .models import Account
 
 auth = Blueprint("auth", __name__)
 
+
 @auth.route("/login", methods=["POST"])
 def create_token():
     email = request.json.get("email", None)
@@ -22,6 +23,13 @@ def create_token():
     access_token = create_access_token(identity=email)
     response = {"access_token": access_token}
     return response
+
+
+@auth.route("/verify", methods=["GET"])
+@jwt_required()
+def verify_token():
+    pass
+
 
 @auth.route("/register", methods=["POST"])
 def register():
@@ -37,16 +45,18 @@ def register():
     response = {"registered": "true"}
     return response, 200
 
+
 @auth.route("/getUser", methods=["POST"])
 @jwt_required()
 def get_user():
     userID = request.json.get("userID", None)
-    
+
     account = Account.query.filter_by(id=userID).first()
     if not account:
         return str(401)
     response = jsonify(account.as_dict())
     return response
+
 
 ## these methods should work for the hashing
 def hash_password(password):

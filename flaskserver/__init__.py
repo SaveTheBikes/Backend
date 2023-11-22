@@ -34,7 +34,7 @@ def create_app():
 
     CORS(auth)
     CORS(bikes)
-    app.register_blueprint(auth, url_prefix="/auth/")
-    app.register_blueprint(bikes, url_prefix="/bikes/")
+    app.register_blueprint(auth, url_prefix="/serenity/auth/")
+    app.register_blueprint(bikes, url_prefix="/serenity/bikes/")
 
     return app

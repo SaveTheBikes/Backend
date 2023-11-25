@@ -23,6 +23,7 @@ def create_app():
     ## also, this will need to be manually pasted and should not enter github.
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DB_URI")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["SQLALCHEMY_POOL_PRE_PING"] = True
     CORS(app)
     JWTManager(app)
     db.init_app(app)

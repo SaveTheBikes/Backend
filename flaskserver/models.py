@@ -10,6 +10,16 @@ class DictEnabled:
     def as_dict(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+class AccountRoles(db.Model):
+    __tablename__ = 'accountroles'
+
+    accountid = db.Column(db.Integer, primary_key = True)
+    roleid = db.Column(db.Integer, primary_key = True)
+
+    def __init__(self, accountid, userid):
+        self.accountid = accountid
+        self.userid = userid
+
 class Account(db.Model, DictEnabled):
     __tablename__ = 'account'
 

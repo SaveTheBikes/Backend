@@ -7,10 +7,22 @@ from flask import Blueprint, Flask, jsonify, request
 from flask_jwt_extended import create_access_token, jwt_required
 
 from . import db
-from .models import Account
+from .models import Account, AccountRoles
 
 auth = Blueprint("auth", __name__)
 
+@auth.route("/isAdmin", methods=["POST"])
+def check_admin():
+    accountid = request.json.get("userID", None)
+    accountrole = AccountRoles.query.filter_by(accountid=accountid).first()
+
+    if not accountrole or accountrole.roleid != 1:
+        response = {"isAdmin": False}
+    else:
+        response = {"isAdmin": True}
+    
+    return response
+    
 
 @auth.route("/login", methods=["POST"])
 def create_token():

@@ -56,8 +56,19 @@ def spot_bike():
     dateseen = request.args.get('dateseen')
     address = request.args.get('address')
 
-    
+    try:
+        newLocation = BikePostLocation(locationlon=locationlon, locationlat=locationlat, postid=bike_ID, address=address, dateseen=dateseen)
+        db.session.add(newLocation)
+        db.session.commit(newLocation)
+        resp = jsonify(success=True)
 
+    except SQLAlchemyError as e:
+        # Roll back our changes if epic fail
+        db.session.rollback()
+        resp = jsonify(success=False, error=str(e))
+    
+    return resp
+    
 @bikes.route("/addBike", methods=["POST"])
 @jwt_required()
 def add_bike():

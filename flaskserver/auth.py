@@ -40,7 +40,7 @@ def create_token():
 @auth.route("/verify", methods=["GET"])
 @jwt_required()
 def verify_token():
-    pass
+    return "valid token", 200
 
 
 @auth.route("/register", methods=["POST"])

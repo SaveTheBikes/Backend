@@ -68,12 +68,12 @@ class BikePost(db.Model, DictEnabled):
     __tablename__ = "bikepost"
 
     id = db.Column(db.Integer, primary_key = True)
-    datestolen = db.Column(db.DateTime)
-    title = db.Column(db.String())
+    datestolen = db.Column(db.DateTime, nullable=False)
+    title = db.Column(db.String(), nullable=False)
     # b64 encoding
-    picture = db.Column(db.UnicodeText)
-    colour = db.Column(db.String())
-    model = db.Column(db.String())
+    picture = db.Column(db.UnicodeText, nullable=False)
+    colour = db.Column(db.String(), nullable=False)
+    model = db.Column(db.String(), nullable=False)
 
     def __init__(self, datestolen, title, picture, colour, model):
         self.datestolen = datestolen

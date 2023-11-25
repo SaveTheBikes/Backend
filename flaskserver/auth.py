@@ -21,8 +21,7 @@ def check_admin():
     else:
         response = {"isAdmin": True}
     
-    return response
-    
+    return response   
 
 @auth.route("/login", methods=["POST"])
 def create_token():
@@ -35,7 +34,6 @@ def create_token():
     response = {"access_token": access_token,
                 "userID": account.id}
     return response
-
 
 @auth.route("/verify", methods=["GET"])
 @jwt_required()

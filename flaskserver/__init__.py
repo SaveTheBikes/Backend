@@ -12,7 +12,6 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 DB_NAME = "database.db"
 
-
 def create_app():
     load_dotenv()
     app = Flask(__name__)

@@ -2,7 +2,7 @@ from flask import Blueprint, Flask, request, jsonify
 from flask_jwt_extended import jwt_required
 from sqlalchemy.exc import SQLAlchemyError
 
-from .models import Account, AccountBikePost, BikePost, BikePostLocation
+from .models import Account, AccountBikePost, BikePost
 from . import db
 
 bikes = Blueprint("bikes", __name__)
@@ -46,28 +46,6 @@ def see_bike():
     bike_ID = request.args.get('id')
     bike = (BikePost.query.filter_by(id=bike_ID).first()).as_dict()
     return jsonify(bike)
-
-@bikes.route("/bikeSpotting", methods=["POST"])
-@jwt_required()
-def spot_bike():
-    bike_ID = request.args.get('id')
-    locationlat = request.args.get('locationlat')
-    locationlon = request.args.get('locationlon')
-    dateseen = request.args.get('dateseen')
-    address = request.args.get('address')
-
-    try:
-        newLocation = BikePostLocation(locationlon=locationlon, locationlat=locationlat, postid=bike_ID, address=address, dateseen=dateseen)
-        db.session.add(newLocation)
-        db.session.commit(newLocation)
-        resp = jsonify(success=True)
-
-    except SQLAlchemyError as e:
-        # Roll back our changes if epic fail
-        db.session.rollback()
-        resp = jsonify(success=False, error=str(e))
-    
-    return resp
     
 @bikes.route("/addBike", methods=["POST"])
 @jwt_required()
@@ -86,7 +64,7 @@ def add_bike():
 
     try:
         # Create a new BikePost instance and add it to the session
-        newBike = BikePost(datestolen=dateStolen, title=title, picture=picture, colour=colour, model=model)
+        newBike = BikePost(datestolen=dateStolen, title=title, picture=picture, colour=colour, model=model, locationlat=locationlat, locationlon=locationlon)
         db.session.add(newBike)
         
         # The 'flush' method sends the above SQL command to the database, 
@@ -96,11 +74,6 @@ def add_bike():
         # Now that the newBike has an ID, create a new AccountBikePost instance
         newAccountBikePost = AccountBikePost(accountid=user_id, postid=newBike.id)
         db.session.add(newAccountBikePost)
-
-        # Add to location table if we have coordinates
-        if locationlat and locationlon:
-            newLocation = BikePostLocation(locationlon=locationlon, locationlat=locationlat, postid=newBike.id, address=address, dateseen=dateseen)
-            db.session.add(newLocation)
 
         # Commit the transaction
         db.session.commit()

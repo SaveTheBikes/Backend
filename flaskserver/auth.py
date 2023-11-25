@@ -31,9 +31,9 @@ def create_token():
     account = Account.query.filter_by(email=email).first()
     if not account or not check_password(account.passwordhash, password):
         return str(401)
-    print("Logged in user with account: {}".format(account.id))
     access_token = create_access_token(identity=email)
-    response = {"access_token": access_token}
+    response = {"access_token": access_token,
+                "userID": account.id}
     return response
 
 
@@ -41,7 +41,6 @@ def create_token():
 @jwt_required()
 def verify_token():
     pass
-
 
 @auth.route("/register", methods=["POST"])
 def register():

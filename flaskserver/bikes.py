@@ -1,4 +1,5 @@
 from flask import Blueprint, Flask, request, jsonify
+from flask_jwt_extended import jwt_required
 from sqlalchemy.exc import SQLAlchemyError
 
 from .models import Account, AccountBikePost, BikePost, BikePostLocation
@@ -6,7 +7,7 @@ from . import db
 
 bikes = Blueprint("bikes", __name__)
 ## this gets all bikes. 
-@bikes.route("/bikes", methods=["GET"])
+@bikes.route("/allBikes", methods=["GET"])
 def get_all_bikes():
     bikes = BikePost.query.all()
     for idx, i in enumerate(bikes):
@@ -16,6 +17,7 @@ def get_all_bikes():
 
 ##this gets all userbikes
 @bikes.route("/userBikes", methods=["POST"])
+@jwt_required()
 def get_user_bikes():
     ## will need to work with accountnameBikes to find which ones belong to user
     ## then use bike table to return those TODO
@@ -39,19 +41,32 @@ def get_user_bikes():
     return jsonify(user_bikes)
 
 @bikes.route("/seeBike", methods=["GET"])
+@jwt_required()
 def see_bike():
     bike_ID = request.args.get('id')
     bike = (BikePost.query.filter_by(id=bike_ID).first()).as_dict()
     return jsonify(bike)
 
+@bikes.route("/bikeSpotting", methods=["POST"])
+@jwt_required()
+def spot_bike():
+    bike_ID = request.args.get('id')
+    locationlat = request.args.get('locationlat')
+    locationlon = request.args.get('locationlon')
+    dateseen = request.args.get('dateseen')
+    address = request.args.get('address')
+
+    
+
 @bikes.route("/addBike", methods=["POST"])
+@jwt_required()
 def add_bike():
     dateStolen = request.json.get("dateStolen", None)
     title = request.json.get("title", None)
     picture = request.json.get("encodedPicture", None)
     colour = request.json.get("colour", None)
     model = request.json.get("model", None)
-    user_id = request.json.get("user_id")
+    user_id = request.json.get("userID")
 
     locationlat = request.json.get("location_lat", None)
     locationlon = request.json.get("location_lon", None)

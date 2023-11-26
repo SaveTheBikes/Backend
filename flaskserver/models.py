@@ -61,8 +61,10 @@ class BikePost(db.Model, DictEnabled):
     locationlat = db.Column(db.Float, nullable=False)
     locationlon = db.Column(db.Float, nullable=False)
 
-    def __init__(self, datestolen, title, picture, colour, model):
+    def __init__(self, datestolen, title, picture, colour, model, locationlat, locationlon):
         self.datestolen = datestolen
+        self.locationlat = locationlat
+        self.locationlon = locationlon
         self.title = title
         self.picture = picture
         self.colour = colour

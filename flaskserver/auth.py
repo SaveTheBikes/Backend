@@ -48,6 +48,7 @@ def register():
         email=registerDict["email"],
         passwordhash=hash_password(registerDict["password"]),
         accountname=registerDict["username"],
+        phonenumber=registerDict["phonenumber"]
     )
     db.session.add(newAccount)
     db.session.commit()

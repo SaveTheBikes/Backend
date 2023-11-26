@@ -9,18 +9,28 @@ bikes = Blueprint("bikes", __name__)
 ## this gets all bikes. 
 @bikes.route("/allBikes", methods=["GET"])
 def get_all_bikes():
-    bikes = BikePost.query.all()
-    for idx, i in enumerate(bikes):
-        bikes[idx] = i.as_dict()
-    ## convert to dict and send back to home
-    return jsonify(bikes)
+    bike_posts_with_phone_numbers = db.session.query(
+        BikePost, Account.phonenumber
+    ).join(
+        AccountBikePost, AccountBikePost.postid == BikePost.id
+    ).join(
+        Account, Account.id == AccountBikePost.accountid
+    ).all()
+
+    # Construct the result list with bike details and associated phone numbers
+    results = []
+    for bike_post, phone_number in bike_posts_with_phone_numbers:
+        bike_details = bike_post.as_dict()
+        bike_details['phone_number'] = phone_number
+        results.append(bike_details)
+
+    return jsonify(results)
 
 ##this gets all userbikes
 @bikes.route("/userBikes", methods=["POST"])
 @jwt_required()
 def get_user_bikes():
     ## will need to work with accountnameBikes to find which ones belong to user
-    ## then use bike table to return those TODO
 
     userID = request.json.get("userID", None)
     if not userID:
@@ -37,6 +47,7 @@ def get_user_bikes():
 
     for idx, i in enumerate(user_bikes):
         user_bikes[idx] = i.as_dict()
+        user_bikes[idx]["phonenumber"] = user.phonenumber
 
     return jsonify(user_bikes)
 
@@ -44,8 +55,26 @@ def get_user_bikes():
 @jwt_required()
 def see_bike():
     bike_ID = request.args.get('id')
-    bike = (BikePost.query.filter_by(id=bike_ID).first()).as_dict()
-    return jsonify(bike)
+    # Ensure you have a valid bike_ID before proceeding with the query
+
+    # Perform a join between the tables to find the phone number associated with the bike post
+    bike_with_phone_number = db.session.query(
+        BikePost, Account.phonenumber
+    ).join(
+        AccountBikePost, AccountBikePost.postid == BikePost.id
+    ).join(
+        Account, Account.id == AccountBikePost.accountid
+    ).filter(
+        BikePost.id == bike_ID
+    ).first()
+
+    if bike_with_phone_number:
+        bike, phone_number = bike_with_phone_number
+        bike_details = bike.as_dict()
+        bike_details['phonenumber'] = phone_number
+        return jsonify(bike_details)
+    else:
+        return jsonify({"error": "Bike not found"}), 404
     
 @bikes.route("/addBike", methods=["POST"])
 @jwt_required()
@@ -59,8 +88,6 @@ def add_bike():
 
     locationlat = request.json.get("location_lat", None)
     locationlon = request.json.get("location_lon", None)
-    dateseen = request.json.get("dateseen", None)
-    address = request.json.get("address", None)
 
     try:
         # Create a new BikePost instance and add it to the session

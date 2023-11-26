@@ -27,11 +27,13 @@ class Account(db.Model, DictEnabled):
     accountname = db.Column(db.String())
     email = db.Column(db.String())
     passwordhash = db.Column(db.String())
+    phonenumber = db.Column(db.String())
 
-    def __init__(self, accountname, email, passwordhash):
+    def __init__(self, accountname, email, passwordhash, phonenumber):
         self.accountname = accountname
         self.email = email
         self.passwordhash = passwordhash
+        self.phonenumber = phonenumber
     
     def __repr__(self):
         return '<account name {}> & <email {}> & <id {}>'.format(self.accountname, self.email, self.id)

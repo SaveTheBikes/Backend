@@ -21,7 +21,7 @@ def get_all_bikes():
     results = []
     for bike_post, phone_number in bike_posts_with_phone_numbers:
         bike_details = bike_post.as_dict()
-        bike_details['phone_number'] = phone_number
+        bike_details['phonenumber'] = phone_number
         results.append(bike_details)
 
     return jsonify(results)

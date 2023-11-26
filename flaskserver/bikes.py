@@ -82,7 +82,6 @@ def add_bike():
     dateStolen = request.json.get("datestolen", None)
     title = request.json.get("title", None)
     picture = request.json.get("encodedpicture", None)
-    picture = picture.split(',', 1)[1]
     colour = request.json.get("colour", None)
     model = request.json.get("model", None)
     user_id = request.json.get("userID")

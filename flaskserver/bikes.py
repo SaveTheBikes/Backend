@@ -79,15 +79,15 @@ def see_bike():
 @bikes.route("/addBike", methods=["POST"])
 @jwt_required()
 def add_bike():
-    dateStolen = request.json.get("dateStolen", None)
+    dateStolen = request.json.get("datestolen", None)
     title = request.json.get("title", None)
-    picture = request.json.get("encodedPicture", None)
+    picture = request.json.get("encodedpicture", None)
     colour = request.json.get("colour", None)
     model = request.json.get("model", None)
     user_id = request.json.get("userID")
 
-    locationlat = request.json.get("location_lat", None)
-    locationlon = request.json.get("location_lon", None)
+    locationlat = request.json.get("locationlat", None)
+    locationlon = request.json.get("locationlon", None)
 
     try:
         # Create a new BikePost instance and add it to the session

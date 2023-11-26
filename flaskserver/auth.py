@@ -63,7 +63,10 @@ def get_user():
     account = Account.query.filter_by(id=userID).first()
     if not account:
         return str(401)
-    response = jsonify(account.as_dict())
+    accountDict = account.as_dict()
+    del accountDict["passwordhash"]
+    print(accountDict)
+    response = jsonify(accountDict)
     return response
 
 
